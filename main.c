@@ -97,6 +97,37 @@ tipoMapa *repartir(Map *mapa, int *vectorClaves) {
   return cartaEntregar;
 }
 
+//Crear mazos iniciales 
+void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
+  /*a función crear baraja llama a la función repartir 7 veces 
+  por cada jugador, es decir que ingresa 7 cartas a cada listaJugadores de 
+  jugador*/
+  
+  for(int i = 1 ; i <= *contJugadores ; i++) {
+    //creo la listaJugadores de cartas del jugador i 
+    tipoJugador *jugador=malloc(sizeof(tipoJugador));
+    jugador->id=i;
+    jugador->cartasJugador = createList();
+    printf("Ingrese el nickname del jugador: ");
+    scanf("%[^\n]s", jugador->jugador);
+    getchar();
+    //se reparten las cartas al la lista de cartas del jugador
+    for(int j=0; j<=6;j++){
+      pushFront(jugador->cartasJugador, repartir(mapa, vectorClaves));
+    }
+    //se ingresa el jugador con su baraja creada en la lista de jugadores
+    pushBack(listaJugadores, jugador);
+  } 
+}
+
+
+void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
+  //mostrarMapa(mapa);
+  crearBaraja(listaJugadores,mapa, contJugadores, vectorClaves);
+  theGame(listaJugadores,mapa, contJugadores, vectorClaves,false);
+  
+  return;
+}
 
 //Función para seleccionar la cantidad de jugadores
 void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
