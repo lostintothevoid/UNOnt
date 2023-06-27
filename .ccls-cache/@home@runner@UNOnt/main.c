@@ -27,6 +27,45 @@ typedef struct{
   int cont; //Contador de veces que la carta está en el mapa de cartas
 }tipoMapa;
 
+void rellenarMapaCartas(Map *mapa, int *vectorClaves){
+  //Se define una carta auxiliar, el color que será 100 y se irá multiplicando y la posición del vector que 
+  //se llenará que partirá en 0.
+  tipoCarta cartaAux;
+  int color=100;
+  int posicion=0;
+
+  /*Aquí se asignarán todas las cartas que tengan un color asignado, es decir, 
+  si la carta tiene número, se le asignará y si no se le asigna -1, su código se le asigna por
+  el tipo de carta que es, también se le asignará los colores correspondientes.
+  */
+  for(int i=0; i<=12; i++){
+    if(i>=0 && i<=9) cartaAux.numero=i;
+    else{
+      cartaAux.numero=-1;
+    }
+    cartaAux.codigo=i;
+    //Asignando colores
+    for(int j=1; j<=4; j++){
+      cartaAux.color=color*j;
+      //Asignando la clave para el mapa de cartas.
+      cartaAux.clave=cartaAux.color+cartaAux.codigo;
+      tipoMapa *cartaMapa = malloc(sizeof(tipoMapa));
+      cartaMapa->carta = cartaAux;
+
+      int *clave = malloc(sizeof(int));
+      *clave = cartaAux.clave;
+      
+      //Hay 2 cartas de cada una de estas en el mapa
+      cartaMapa->cont = 2;
+      //Se guarda la clave única en un vector para luego buscar estas cartas de manera random.
+      vectorClaves[posicion]=cartaAux.clave;
+      posicion++;
+
+      //Se inserta la carta al mapa
+      insertMap(mapa, clave, cartaMapa);
+    }
+  }
+
 void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves){
   //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
   int opcion = 1;
