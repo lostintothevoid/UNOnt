@@ -27,6 +27,11 @@ typedef struct{
   int cont; //Contador de veces que la carta está en el mapa de cartas
 }tipoMapa;
 
+int is_equal_int(void *key1, void *key2) {
+  if(*(int*)key1==*(int*)key2) return 1;
+  return 0;
+}
+
 void rellenarMapaCartas(Map *mapa, int *vectorClaves){
   //Se define una carta auxiliar, el color que será 100 y se irá multiplicando y la posición del vector que 
   //se llenará que partirá en 0.
@@ -65,6 +70,27 @@ void rellenarMapaCartas(Map *mapa, int *vectorClaves){
       insertMap(mapa, clave, cartaMapa);
     }
   }
+
+
+
+//Función para seleccionar la cantidad de jugadores
+void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
+  int opcion = 1;
+  while(opcion != 0){
+    printf("\033[0;37m");
+
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
+    printf("║  Presione 0 para volver al menu inicial                     ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    
+    scanf("%d", contJugadores);
+    opcion=(*contJugadores);
+    getchar();
+  
+    if(opcion>=2 && opcion<=4) theGameBegins(listaJugadores,mapa, contJugadores,vectorClaves);   
+  }
+}
 
 void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves){
   //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
