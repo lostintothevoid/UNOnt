@@ -9,6 +9,16 @@
 #include <stdbool.h>
 
 int main(void) {
-  printf("Hello World\n");
+  List *listaJugadores = createList();
+  Map *mapa = createMap(is_equal_int);
+  int contJugadores;
+  int *vectorClaves =(int*) malloc(54*sizeof(int));
+  rellenarMapaCartas(mapa,vectorClaves);
+  srand(time(NULL));
+  
+  menu(listaJugadores, mapa, &contJugadores,vectorClaves);
+  free(vectorClaves);
+  free(listaJugadores);
+  free(mapa);
   return 0;
-}
+} 
