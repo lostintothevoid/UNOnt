@@ -70,7 +70,32 @@ void rellenarMapaCartas(Map *mapa, int *vectorClaves){
       insertMap(mapa, clave, cartaMapa);
     }
   }
+}
 
+/*La función saca una carta al azar del mapa de cartas (El que contiene todas las cartas) y la devuelve, a su vez, baja el contador de dicha carta en el mapa, para que indique que esa carta ya está ocupada.*/
+tipoMapa *repartir(Map *mapa, int *vectorClaves) {
+
+  //Genera numero aleatorio
+  int numeroAleatorio = rand() % 54;
+
+  //Busca la clave de una carta con ese numero aletorio como indice en el vector  
+  int claveCarta = vectorClaves[numeroAleatorio];
+  //Busco la carta con esa clave
+  tipoMapa *cartaEntregar = (tipoMapa *)searchMap(mapa, &claveCarta);
+    
+  while(true){
+    //Verificar disponibilidad
+    if(cartaEntregar->cont != 0) {
+      cartaEntregar->cont--;
+      return cartaEntregar;
+    }
+    //En este caso todas las cartas iguales a la obtenida estan en juego entonces se saca otra
+    numeroAleatorio = rand() % 54;
+    claveCarta = vectorClaves[numeroAleatorio];
+    cartaEntregar = (tipoMapa *)searchMap(mapa, &claveCarta);
+  }
+  return cartaEntregar;
+}
 
 
 //Función para seleccionar la cantidad de jugadores
