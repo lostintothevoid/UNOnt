@@ -161,6 +161,131 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
     color=CartaArribaMapa->carta.color;  
   }
 
+    //Se comienza el ciclo del juego
+  while(true){//(true), en efecto (true)
+
+    //Se obtiene la carta que desea jugar el jugador actual al llamar a la función turnojugador
+    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color);
+    //En caso de que el jugador no tenga una carta para jugar o salte su turno, se retornará NULL.
+
+    //Si la carta es nula y la suma de cartas es 0 entonces el jugador roba solo una carta
+    if(cartaJugada == NULL && sumaDeCartas == 0){
+      pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
+    }
+
+    //Si la carta es nula y la suma de cartas es mayor a 0 el jugador deberá robar la cantidad de cartas indicada por la suma de cartas
+    if(cartaJugada == NULL && sumaDeCartas > 0){
+        while(sumaDeCartas != 0){
+          pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
+          sumaDeCartas--;
+        }
+    }
+
+    //Si el jugador si tiró una carta, entra al siguiente if para confirmar el efecto de su carta
+    if(cartaJugada != NULL){
+
+      //En este caso quiere decir que quiere guardar la partida, entonces llama a la función exportarDatos
+      if(cartaJugada->carta.clave == 999){
+        exportarDatos(listaJugadores, mapa, contJugadores, vectorClaves, direccion, sumaDeCartas, CartaArribaMapa, CartaAbajo,  jugadorAct);
+        return;
+      }
+
+      //En este caso quiere decir que tiró un +2, por lo que la sumaDeCartas se le tiene que sumar 2.
+      if(cartaJugada->carta.codigo==12){
+        sumaDeCartas=sumaDeCartas+2;
+      }
+      //En este caso quiere decir que tiró un +4, por lo que la sumaDeCartas se le tiene que sumar 4.
+      if(cartaJugada->carta.codigo==13){
+        sumaDeCartas=sumaDeCartas+4;
+      }
+
+      //En este caso en el que la carta no sea ni un cambio color o un +4, el color se actualizará.
+      //En el caso contrario el color se actualiza en la función turnoJugador().
+      if(cartaJugada->carta.codigo!=13 && cartaJugada->carta.codigo!=14){
+        color=cartaJugada->carta.color;  
+      }
+
+      //Ahora la cartaAbajo será la actual cartaArriba y la cartaArriba ahora será la carta que se jugó
+      //Entonces el siguiente jugador tendrá que jugar con las condiciones de la cartaJugada, que ahora es cartaArriba
+      CartaAbajo = CartaArribaMapa;
+      CartaArribaMapa = cartaJugada;
+
+      //Procedemos a buscar la cartaJugada para luego eliminarla de la baraja del jugador
+      tipoMapa* cartaNode = firstList(jugadorAct->cartasJugador);
+      while (cartaNode != cartaJugada) {
+          cartaNode = nextList(jugadorAct->cartasJugador);
+      }
+      popCurrent(jugadorAct->cartasJugador);
+
+      /*Tras eliminar la carta de la baraja del jugador se comprueba si se qeudó sin cartas, en caso de 
+      que no posea mas se llamará a la función theGameEnd para terminar el juego*/
+      if(firstList(jugadorAct->cartasJugador) == NULL) {
+        theGameEnd(jugadorAct->jugador);
+      return;
+      }
+
+      //Si la carta es un cambio de dirección, cambiará de valor 0 a 1 o viceversa.
+      //Además implementamos para que cuando se juege de a 2, cuando un jugador tire un cambio de dirección,
+      //le tocará nuevamente su turno
+      if(cartaJugada->carta.codigo==11){
+        if(direccion==0) direccion=1;
+        else{
+          direccion=0;
+        }
+        if(*contJugadores == 2){
+          if(direccion==0){
+            jugadorAct = nextList(listaJugadores);
+            if(jugadorAct == NULL){
+              jugadorAct = firstList(listaJugadores);
+            }
+          }
+          else{
+            jugadorAct = prevList(listaJugadores);
+            if(jugadorAct == NULL){
+              jugadorAct = lastList(listaJugadores);
+            }
+          }
+        }
+      }
+
+      //Si la carta es un bloqueo se avanzará al siguiente
+      if(cartaJugada->carta.codigo==10){
+        //si la dirección es hacia la derecha se avanza un jugador en la lista
+        if(direccion==0){
+          jugadorAct = nextList(listaJugadores);
+          //Si se llegó al final de la lista de jugadores se devolverá al inicio
+          if(jugadorAct == NULL){
+            jugadorAct = firstList(listaJugadores);
+          }
+        }
+        else{
+          //Si la dirección es hacia la izquierda se retrocede un jugador 
+          jugadorAct = prevList(listaJugadores);
+          /*Si estamos en el primer jugador y por lo tanto el anterior es nulo 
+          entonces se va al último de la lista*/
+          if(jugadorAct == NULL){
+            jugadorAct = lastList(listaJugadores);
+          }
+        }
+      }      
+      CartaAbajo->cont++;
+    }
+
+    //Ahora dependiendo de la dirección, se asignará al siguiente jugador
+    if(direccion==0){
+      jugadorAct = nextList(listaJugadores);
+      if(jugadorAct == NULL){
+        jugadorAct = firstList(listaJugadores);
+      }
+    }
+    else{
+      jugadorAct = prevList(listaJugadores);
+      if(jugadorAct == NULL){
+        jugadorAct = lastList(listaJugadores);
+      }
+    }  
+  }
+}
 
 void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
   //mostrarMapa(mapa);
