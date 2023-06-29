@@ -120,6 +120,47 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   } 
 }
 
+void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar) {
+  //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
+  int direccion = 0;
+  //La sumaDeCartas es el control de las cartas que hay que ir sacando durante la partida
+  int sumaDeCartas = 0;
+  //El color será 100 rojo, 200 azul, 300 verde y 400 amarillo
+  int color = 0;
+  //turnoDe es el id del jugador al que le toca
+  int turnoDe = 0;
+  tipoMapa *CartaArribaMapa = malloc(sizeof(tipoMapa));
+  
+  //Se limpia la pantalla
+  system("cls");
+  
+  //Si no se cargaron datos se llama a la funcion repartir para inicializar la "carta sobre la mesa"
+  if(cargar==false){
+    CartaArribaMapa = repartir(mapa, vectorClaves);
+    //Si la carta es un +4 o un cambio de color se vuelve a repartir hasta que salga una carta de color
+    while(CartaArribaMapa->carta.codigo==13 || CartaArribaMapa->carta.codigo==14){
+      CartaArribaMapa = repartir(mapa, vectorClaves);
+    }
+  }
+  tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
+
+  //Obtenemos el primer jugador
+  tipoJugador *jugadorAct = firstList(listaJugadores);
+   
+  //Se comprueba si se estan cargando datos, en caso de que la carga de datos resulte fallida se retorna
+  if(cargar==true){
+   if(cargarDatos(listaJugadores, mapa, contJugadores, vectorClaves, &direccion, &sumaDeCartas, CartaArribaMapa, CartaAbajo, &turnoDe) == false) return;
+    //Se vincula turnoDe con el jugador actual
+    for(jugadorAct=firstList(listaJugadores); jugadorAct!=NULL ; jugadorAct=nextList(listaJugadores)){
+      if(turnoDe==jugadorAct->id) break;
+    }
+  }
+
+  //El color será igual al de la carta arriba si no es un +4 o un cambio color, ya que no nos interesa que tenga ese color
+  if(CartaArribaMapa->carta.codigo!=13 && CartaArribaMapa->carta.codigo){
+    color=CartaArribaMapa->carta.color;  
+  }
+
 
 void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
   //mostrarMapa(mapa);
@@ -144,7 +185,11 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
     opcion=(*contJugadores);
     getchar();
   
-    if(opcion>=2 && opcion<=4) theGameBegins(listaJugadores,mapa, contJugadores,vectorClaves);   
+    if(opcion>=2 && opcion<=4){
+      theGameBegins(listaJugadores,mapa, contJugadores,vectorClaves);
+      return;
+    } 
+         
   }
 }
 
