@@ -120,6 +120,25 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   } 
 }
 
+tipoMapa *puntocentral(List *barajajugador){
+  int contcentro = 0;
+  tipoMapa *aux = firstList(barajajugador);
+
+  while(aux!=NULL){
+    aux = nextList(barajajugador);
+    contcentro++;
+  }
+  
+  int centro = trunc(contcentro/2);
+  
+  aux = firstList(barajajugador);
+  while(centro!=0){
+    aux=nextList(barajajugador);
+    centro--;
+  }
+  return aux;
+}
+
 tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){ 
   
   tipoMapa *centro = puntocentral(barajajugador);
