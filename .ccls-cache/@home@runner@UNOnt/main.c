@@ -120,6 +120,147 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   } 
 }
 
+tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){ 
+  
+  tipoMapa *centro = puntocentral(barajajugador);
+  tipoMapa *next = nextList(barajajugador);
+  centro = puntocentral(barajajugador);
+  tipoMapa *prev = prevList(barajajugador); 
+  tipoMapa *aux;
+
+  centro = puntocentral(barajajugador);
+  
+  char vacio[4];
+  strcpy(vacio,"xxx");
+  int tecla;
+  while(true){
+    //El pato ve los prints
+
+    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
+    printf("            %i\n       ", centro->carta.clave);  
+    
+    
+    if(prev != NULL)printf("%i",prev->carta.clave);
+    else {printf("X");}
+    
+    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
+    else {printf("       X\n   ");  }
+    //if(verificarPrev != NULL)printf("%s",vacio);
+    //if(verificarNext != NULL)printf("               %s\n", vacio);
+
+    scanf("%i", &tecla);      
+            
+    switch(tecla){
+  
+      case 77:{//derecha
+        if(next==NULL){
+          break;
+        }
+        prev = centro;
+        centro = nextList(barajajugador);
+        next = nextList(barajajugador);
+        if(next != NULL){
+          aux = prevList(barajajugador);  
+        }
+        break;
+      }
+      
+      case 75:{//izquierda
+        if(prev == NULL){
+          break;
+        }
+        next = centro;
+        centro = prevList(barajajugador);
+        prev =  prevList(barajajugador);
+        if(prev != NULL){
+          aux = nextList(barajajugador);
+        }
+        break;
+      }
+      
+      case 32:{
+        //Hay que hacer lo visual
+      
+        //voy a verificar si coinicide, en caso de no coincidir se devolvería a la seleccion de cartas
+        //Comprobar si puede tirar la carta
+      
+        //comprobar si tiro un mas algo teniendo una suma pendiente
+        if(sumaDeCartas > 0 ){
+          if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
+            if(centro->carta.codigo == 13){
+              printf("¿A que color quieres cambiar?\n");
+              printf("1. Rojo\n");
+              printf("2. Azul\n");
+              printf("3. Verde\n");
+              printf("4. Amarillo\n");
+              int opcion;
+              scanf("%d", &opcion);
+              switch(opcion){
+                case 1: *color=100;
+                        break;
+                case 2: *color=200;
+                        break;
+                case 3: *color=300;
+                        break;
+                case 4: *color=400;
+                        break;
+              }
+              return centro;
+            } 
+            return centro;
+          }
+        }
+
+        //comprobar si coincide el color
+        if(centro->carta.color == *color && sumaDeCartas == 0){
+          return centro;
+        }
+      
+        //comprobar si coincide el numero/simbolo
+        if(centro->carta.codigo == CartaArriba.codigo && sumaDeCartas == 0){
+          return centro;
+        }
+
+        if(sumaDeCartas==0 && (centro->carta.codigo==14 || centro->carta.codigo==13)){
+          printf("¿A que color quieres cambiar?\n");
+          printf("1. Rojo\n");
+          printf("2. Azul\n");
+          printf("3. Verde\n");
+          printf("4. Amarillo\n");
+          int opcion;
+          scanf("%d", &opcion);
+          switch(opcion){
+            case 1: *color=100;
+                    break;
+            case 2: *color=200;
+                    break;
+            case 3: *color=300;
+                    break;
+            case 4: *color=400;
+                    break;
+          }
+          return centro;
+        }
+        printf("Tira otra carta^^\n\n");
+        break;
+      }
+
+      case 22:{
+        return NULL;
+      }
+      case 99:{
+        tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
+        cartaBool->carta.clave=999;
+        return cartaBool;
+      }
+      
+    }
+    //A estas alturas ya tenemos la carta que jugó el jugador
+  }
+  
+}
+
+
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar) {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
   int direccion = 0;
