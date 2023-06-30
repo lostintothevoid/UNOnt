@@ -279,6 +279,56 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   
 }
 
+void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int direccion, int sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, tipoJugador *jugadorAct){
+  //Se crea una string estática para dar un nombre al archivo qsue exportará a los jugadores
+  
+  char archivo[100];
+  printf("Escribe el nombre con el que guardarás tu partida:\n");
+  getchar();
+  //scanf("%s",archivo);
+  scanf("%[^\n]s",archivo);
+  getchar();
+  FILE *fp = fopen(archivo, "w");
+
+
+  fprintf(fp, "Datos de partida: contJugadores, Direccion, sumDeCartas, CartaArribaMapa.numero, CartaArribaMapa.codigo, CartaArribaMapa.color, CartaArribaMapa.clave, CartaArribaMapa.cont, CartaAbajo.numero, CartaAbajo.codigo, CartaAbajo.color, CartaAbajo.clave, CartaAbajo.cont, jugadorAct.id\n");
+
+  fprintf(fp, "%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n", *contJugadores, direccion, sumaDeCartas, CartaArribaMapa->carta.numero, CartaArribaMapa->carta.codigo, CartaArribaMapa->carta.color, CartaArribaMapa->carta.clave, CartaArribaMapa->cont, CartaAbajo->carta.numero, CartaAbajo->carta.codigo, CartaAbajo->carta.color, CartaAbajo->carta.clave, CartaAbajo->cont, jugadorAct->id);
+  
+  
+  fprintf(fp, "NombreJugador,ID jugador,Carta 1,numero, codigo, color, clave,Carta 2,Carta 3,Carta 4,Carta 5,Carta 6,Carta 7,Carta ...\n");
+  //Se comienza a recorrer la lista jugaadores para imprimir los datos al archivo que se exportará todo
+  for (tipoJugador *player = firstList(listaJugadores) ; player != NULL ; player = nextList(listaJugadores)){
+    fprintf(fp, "%s,%d,", player->jugador, player->id);
+    
+    //Dentro de la iteración "for", se entra a otra, ya que puede existir el caso de que hayan más de un item
+    for(tipoMapa* carta=firstList(player->cartasJugador) ; carta!=NULL; carta=nextList(player->cartasJugador)){
+      
+      fprintf(fp, "%i,%i,%i,%i,%i,", carta->cont, carta->carta.numero, carta->carta.codigo, carta->carta.color, carta->carta.clave);
+    }
+    fprintf(fp, "\n");
+  }
+  fprintf(fp, "Map: contador,numero, codigo, color, clave\n");
+  
+  void* elemento = firstMap(mapa);
+
+  while (elemento != NULL) {
+      tipoMapa* cartaMapa = (tipoMapa*)elemento;
+      
+       fprintf(fp, "%i,%i,%i,%i,%i,", cartaMapa->cont, cartaMapa->carta.numero, cartaMapa->carta.codigo, cartaMapa->carta.color, cartaMapa->carta.clave);
+       fprintf(fp, "\n");
+    
+      elemento = nextMap(mapa);
+  }
+  
+  
+  //De no haber errores, se muestra el siguiente mensaje por pantalla 
+  printf("===============================================================\n");
+  printf("                  Partida guardada con éxito\n");
+  printf("===============================================================\n");
+  fclose(fp);
+  
+}
 
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar) {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
