@@ -180,7 +180,7 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   {
     kbhit();
     tecla = getch();
-    gotoxy(84,13);colorCarta(0);printf("                                                         \n");
+    gotoxy(74,13);colorCarta(0);printf("                                                         \n");
   }
 
 
