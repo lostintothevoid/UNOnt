@@ -5,8 +5,24 @@
 #include "list.h"
 #include "Map.h"
 #include <time.h>
+#include <conio.h>
 #include <math.h>
 #include <stdbool.h>
+#include "gotoxy.h"
+#include "mostrarcartas.h"
+
+/*Estructura del tipoCarta
+- Int Numero //
+- int codigo: Cada carta tendrá un código específico asociado. En caso de que sea
+una carta de tipo numérica, será del 0 al 9, el cambio color valdrá 10, +4 valdrá 11,
+bloqueo valdrá 12, reversa 13 y +2 14.
+- Int color: Se utilizara un numero para identificar el color que le corresponde a la carta
+100 rojo, 200 azul, 300 verde, 400 amarillo y 500 especial.
+Estructura del tipoMapa
+- tipoCarta carta
+- Int Contador: Se contendrá un contador para ver cuantas cartas hay de esta misma
+en el mapa.
+*/
 
 //Estructuras
 typedef struct{
@@ -145,140 +161,315 @@ tipoMapa *puntocentral(List *barajajugador){
   return aux;
 }
 
-tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){ 
-  
+tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color) {
+
   tipoMapa *centro = puntocentral(barajajugador);
   tipoMapa *next = nextList(barajajugador);
   centro = puntocentral(barajajugador);
   tipoMapa *prev = prevList(barajajugador); 
   tipoMapa *aux;
 
+  //Se deja la baraja centrada
   centro = puntocentral(barajajugador);
   
-  char vacio[4];
-  strcpy(vacio,"xxx");
-  int tecla;
+  char uno = 0;
+  int tecla=0;
+  gotoxy(84,13);colorCarta(4);printf  ("Presiona la tecla izquierda o derecha para ver tus cartas\n");
+  
+  while(tecla != 75 && tecla != 77)
+  {
+    kbhit();
+    tecla = getch();
+    gotoxy(84,13);colorCarta(0);printf("                                                         \n");
+  }
+
+
+
   while(true){
     //El pato ve los prints
+    printf("\033[?25l");
+    gotoxy(92,19);mostrarMargen(0);printf("\n");
+    gotoxy(92,20);primeraLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,21);segundaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,22);terceraLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,23);cuartaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,24);quintaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,25);sextaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,26);septimaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,27);octavaLinea(CartaArriba.clave);printf("\n");
+    gotoxy(92,28);mostrarMargen(1);printf("\n");
+    if(next!=NULL || prev!=NULL){
+      gotoxy(92,37);mostrarMargen(0);printf("\n");
+      gotoxy(92,38);primeraLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,39);segundaLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,40);terceraLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,41);cuartaLinea(centro->carta.clave);
+      gotoxy(92,42);quintaLinea(centro->carta.clave);
+      gotoxy(92,43);sextaLinea(centro->carta.clave);
+      gotoxy(92,44);septimaLinea(centro->carta.clave);
+      gotoxy(92,45);octavaLinea(centro->carta.clave);
+      gotoxy(92,46);mostrarMargen(1);
+    }
+    else if (next==NULL && prev==NULL)
+    {
+      gotoxy(92,37);mostrarMargen(0);printf("\n");
+      gotoxy(92,38);primeraLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,39);segundaLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,40);terceraLinea(centro->carta.clave);printf("\n");
+      gotoxy(92,41);cuartaLinea(centro->carta.clave);
+      gotoxy(92,42);quintaLinea(centro->carta.clave);
+      gotoxy(92,43);sextaLinea(centro->carta.clave);
+      gotoxy(92,44);septimaLinea(centro->carta.clave);
+      gotoxy(92,45);octavaLinea(centro->carta.clave);
+      gotoxy(92,46);mostrarMargen(1);
+      
+      gotoxy(30,19);printf(" _    _  _   _   ____   _  _  _\n");
+      gotoxy(30,20);printf("| |  | || \\ | | / __ \\ | || || |\n");
+      gotoxy(30,21);printf("| |  | ||  \\| || |  | || || || |\n");
+      gotoxy(30,22);printf("| |  | || . ` || |  | || || || |\n");
+      gotoxy(30,23);printf("| |__| || |\\  || |__| ||_||_||_|\n");
+      gotoxy(30,24);printf(" \\____/ |_| \\_| \\____/ (_)(_)(_)\n");  
+    }
 
-    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
-    printf("            %i\n       ", centro->carta.clave);  
-    
-    
-    if(prev != NULL)printf("%i",prev->carta.clave);
-    else {printf("X");}
-    
-    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
-    else {printf("       X\n   ");  }
-    //if(verificarPrev != NULL)printf("%s",vacio);
-    //if(verificarNext != NULL)printf("               %s\n", vacio);
+    if(prev != NULL){
+      gotoxy(75,41);mostrarMargen(0);
+      gotoxy(75,42);primeraLinea(prev->carta.clave);
+      gotoxy(75,43);segundaLinea(prev->carta.clave);
+      gotoxy(75,44);terceraLinea(prev->carta.clave);
+      gotoxy(75,45);cuartaLinea(prev->carta.clave);
+      gotoxy(75,46);quintaLinea(prev->carta.clave);
+      gotoxy(75,47);sextaLinea(prev->carta.clave);
+      gotoxy(75,48);septimaLinea(prev->carta.clave);
+      gotoxy(75,49);octavaLinea(prev->carta.clave);
+      gotoxy(75,50);mostrarMargen(1);
+    }
+    else {
+      gotoxy(75,41);mostrarMargen(2);
+      gotoxy(75,42);mostrarMargen(2);
+      gotoxy(75,43);mostrarMargen(2);
+      gotoxy(75,44);mostrarMargen(2);
+      gotoxy(75,45);mostrarMargen(2);
+      gotoxy(75,46);mostrarMargen(2);
+      gotoxy(75,47);mostrarMargen(2);
+      gotoxy(75,48);mostrarMargen(2);
+      gotoxy(75,49);mostrarMargen(2);
+      gotoxy(75,50);mostrarMargen(2);
+    }
 
-    scanf("%i", &tecla);      
-            
-    switch(tecla){
-  
-      case 77:{//derecha
-        if(next==NULL){
+    if(next!=NULL){
+      gotoxy(109,41);mostrarMargen(0);printf("\n");
+      gotoxy(109,42);primeraLinea(next->carta.clave);printf("\n");
+      gotoxy(109,43);segundaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,44);terceraLinea(next->carta.clave);printf("\n");
+      gotoxy(109,45);cuartaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,46);quintaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,47);sextaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,48);septimaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,49);octavaLinea(next->carta.clave);printf("\n");
+      gotoxy(109,50);mostrarMargen(1);printf("\n");
+    }
+    else {
+      gotoxy(109,41);mostrarMargen(2);printf("\n");
+      gotoxy(109,42);mostrarMargen(2);printf("\n");
+      gotoxy(109,43);mostrarMargen(2);printf("\n");
+      gotoxy(109,44);mostrarMargen(2);printf("\n");
+      gotoxy(109,45);mostrarMargen(2);printf("\n");
+      gotoxy(109,46);mostrarMargen(2);printf("\n");
+      gotoxy(109,47);mostrarMargen(2);printf("\n");
+      gotoxy(109,48);mostrarMargen(2);printf("\n");
+      gotoxy(109,49);mostrarMargen(2);printf("\n");
+      gotoxy(109,50);mostrarMargen(2);printf("\n");
+    }
+    if(kbhit()){
+      gotoxy(30,30);tecla = getch();
+      
+
+      switch(tecla){
+    
+        case 77:{//derecha
+          if(next==NULL){
+            break;
+          }
+          prev = centro;
+          centro = nextList(barajajugador);
+          next = nextList(barajajugador);
+          if(next != NULL){
+            aux = prevList(barajajugador);  
+          }
           break;
         }
-        prev = centro;
-        centro = nextList(barajajugador);
-        next = nextList(barajajugador);
-        if(next != NULL){
-          aux = prevList(barajajugador);  
-        }
-        break;
-      }
-      
-      case 75:{//izquierda
-        if(prev == NULL){
+        
+        case 75:{//izquierda
+          if(prev == NULL){
+            break;
+          }
+          next = centro;
+          centro = prevList(barajajugador);
+          prev =  prevList(barajajugador);
+          if(prev != NULL){
+            aux = nextList(barajajugador);
+          }
           break;
         }
-        next = centro;
-        centro = prevList(barajajugador);
-        prev =  prevList(barajajugador);
-        if(prev != NULL){
-          aux = nextList(barajajugador);
-        }
-        break;
-      }
-      
-      case 32:{
-        //Hay que hacer lo visual
-      
-        //voy a verificar si coinicide, en caso de no coincidir se devolvería a la seleccion de cartas
-        //Comprobar si puede tirar la carta
-      
-        //comprobar si tiro un mas algo teniendo una suma pendiente
-        if(sumaDeCartas > 0 ){
-          if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
-            if(centro->carta.codigo == 13){
-              printf("¿A que color quieres cambiar?\n");
-              printf("1. Rojo\n");
-              printf("2. Azul\n");
-              printf("3. Verde\n");
-              printf("4. Amarillo\n");
-              int opcion;
-              scanf("%d", &opcion);
-              switch(opcion){
-                case 1: *color=100;
-                        break;
-                case 2: *color=200;
-                        break;
-                case 3: *color=300;
-                        break;
-                case 4: *color=400;
-                        break;
-              }
+        
+        case 32:{
+          //Verificar si la carta es apta para ser tirada, en caso de no coincidir se devolvería a la seleccion de cartas
+          //Comprobar si puede tirar la carta
+        
+          //Comprobar si tiro un mas algo teniendo una suma pendiente
+          if(sumaDeCartas > 0 ){
+            if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
+              if(centro->carta.codigo == 13){
+                gotoxy(2,51);printf("¿A que color quieres cambiar?\n");
+                gotoxy(2,52);colorCarta(1);printf("1. Rojo\n");
+                gotoxy(2,53);colorCarta(2);printf("2. Azul\n");
+                gotoxy(2,54);colorCarta(3);printf("3. Verde\n");
+                gotoxy(2,55);colorCarta(4);printf("4. Amarillo\n");
+                
+                int flecha = 1;
+                int tecla;
+                while (true){
+                  printf("\033[?25l");
+                  gotoxy(1, flecha + 51);
+                  printf(">");
+                  tecla = getch();
+                  gotoxy(1, flecha + 51);
+                  printf(" ");
+
+                  if (tecla == 32) {
+                    break;  // Presionar Enter para seleccionar la opción
+                  } else if (tecla == 224) {
+                    tecla = getch();  // Leer la tecla de flecha
+                    if (tecla == 72) {
+                      // Flecha hacia arriba
+                      if (flecha > 1) {
+                        flecha--;
+                      }
+                    } else if (tecla == 80) {
+                      // Flecha hacia abajo
+                      if (flecha < 4) {
+                        flecha++;
+                      }
+                    }
+                  }
+                }
+
+                switch(flecha){
+                  case 1: *color=100;
+                          break;
+                  case 2: *color=200;
+                          break;
+                  case 3: *color=300;
+                          break;
+                  case 4: *color=400;
+                          break;
+                }
+                return centro;
+              } 
               return centro;
-            } 
+            }
+
+            gotoxy(1,51);printf("            \n");
+            gotoxy(1,52);printf("             \n");
+            gotoxy(1,53);printf("              \n");
+            gotoxy(1,54);printf("                \n");
+            gotoxy(1,55);printf("                 \n");
+          }
+
+          //comprobar si coincide el color
+          if(centro->carta.color == *color && sumaDeCartas == 0){
             return centro;
           }
-        }
-
-        //comprobar si coincide el color
-        if(centro->carta.color == *color && sumaDeCartas == 0){
-          return centro;
-        }
-      
-        //comprobar si coincide el numero/simbolo
-        if(centro->carta.codigo == CartaArriba.codigo && sumaDeCartas == 0){
-          return centro;
-        }
-
-        if(sumaDeCartas==0 && (centro->carta.codigo==14 || centro->carta.codigo==13)){
-          printf("¿A que color quieres cambiar?\n");
-          printf("1. Rojo\n");
-          printf("2. Azul\n");
-          printf("3. Verde\n");
-          printf("4. Amarillo\n");
-          int opcion;
-          scanf("%d", &opcion);
-          switch(opcion){
-            case 1: *color=100;
-                    break;
-            case 2: *color=200;
-                    break;
-            case 3: *color=300;
-                    break;
-            case 4: *color=400;
-                    break;
+        
+          //comprobar si coincide el numero/simbolo
+          if(centro->carta.codigo == CartaArriba.codigo && sumaDeCartas == 0){
+            return centro;
           }
-          return centro;
-        }
-        printf("Tira otra carta^^\n\n");
-        break;
-      }
 
-      case 22:{
-        return NULL;
+          //Comprobar si es un +4 o un cambio color
+          if(sumaDeCartas==0 && (centro->carta.codigo==14 || centro->carta.codigo==13)){
+            gotoxy(2,51);printf("¿A que color quieres cambiar?\n");
+            gotoxy(2,52);colorCarta(1);printf("1. Rojo\n");
+            gotoxy(2,53);colorCarta(2);printf("2. Azul\n");
+            gotoxy(2,54);colorCarta(3);printf("3. Verde\n");
+            gotoxy(2,55);colorCarta(4);printf("4. Amarillo\n");
+
+            int flecha = 1;
+            int tecla;
+            while (true){
+              printf("\033[?25l");
+              gotoxy(1, flecha + 51);
+              printf(">");
+              tecla = getch();
+              gotoxy(1, flecha + 51);
+              printf(" ");
+
+              if (tecla == 32) {
+                break;  // Presionar Enter para seleccionar la opción
+              } else if (tecla == 224) {
+                tecla = getch();  // Leer la tecla de flecha
+                if (tecla == 72) {
+                  // Flecha hacia arriba
+                  if (flecha > 1) {
+                    flecha--;
+                  }
+                } else if (tecla == 80) {
+                  // Flecha hacia abajo
+                  if (flecha < 4) {
+                    flecha++;
+                  }
+                }
+              }
+            }
+
+            switch(flecha){
+              case 1: *color=100;
+                      break;
+              case 2: *color=200;
+                      break;
+              case 3: *color=300;
+                      break;
+              case 4: *color=400;
+                      break;
+            }
+            gotoxy(1,51);printf("                             \n");
+            gotoxy(1,52);printf("              \n");
+            gotoxy(1,53);printf("              \n");
+            gotoxy(1,54);printf("                \n");
+            gotoxy(1,55);printf("                 \n");
+            return centro;
+          }
+
+          //Si la carta no es apta, se muestra por pantalla que tire otra carta
+          colorCarta(4);
+          gotoxy(52,11);
+          printf("  _______   _                            _                                            _           \n");
+          gotoxy(52,12);
+          printf(" |__   __| (_)                          | |                                          | |          \n");
+          gotoxy(52,13);
+          printf("    | |     _   _ __    __ _      ___   | |_   _ __    __ _      ___    __ _   _ __  | |_    __ _ \n");
+          gotoxy(52,14);
+          printf("    | |    | | | '__|  / _` |    / _ \\  | __| | '__|  / _` |    / __|  / _` | | '__| | __|  / _` |\n");
+          gotoxy(52,15);
+          printf("    | |    | | | |    | (_| |   | (_) | | |_  | |    | (_| |   | (__  | (_| | | |    | |_  | (_| |\n");
+          gotoxy(52,16);
+          printf("    |_|    |_| |_|     \\__,_|    \\___/   \\__| |_|     \\__,_|    \\___|  \\__,_| |_|     \\__|  \\__,_|\n");
+          colorCarta(0);
+          break;
+        }
+
+        //Significa que sacó cartas o que le tiraron un +2 o +4 y no tenía nada para devolver
+        case 122:{
+          return NULL;
+        }
+
+        //Significa que quiere guardar su partida, por lo que se retorna una carta con una clave especial que se revisará en la función theGame
+        case 120:{
+          tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
+          cartaBool->carta.clave=999;
+          return cartaBool;
+        }
       }
-      case 99:{
-        tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
-        cartaBool->carta.clave=999;
-        return cartaBool;
-      }
-      
     }
     //A estas alturas ya tenemos la carta que jugó el jugador
   }
@@ -540,7 +731,12 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
 
     //Se comienza el ciclo del juego
   while(true){//(true), en efecto (true)
-
+    system("cls");
+    printf("\033[?25l");
+    //mostrarListasJugadores(listaJugadores);
+    gotoxy(84,8);colorCarta(2);printf("==============================\n");
+    gotoxy(84,9);colorCarta(4);printf("       TURNO DE: %s \n", jugadorAct->jugador);
+    gotoxy(84,10);colorCarta(2);printf("==============================\n"); 
     //Se obtiene la carta que desea jugar el jugador actual al llamar a la función turnojugador
     tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color);
     //En caso de que el jugador no tenga una carta para jugar o salte su turno, se retornará NULL.
@@ -698,7 +894,7 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
       printf(" ");
 
       if (tecla == 32) {
-        break;  // Presionar Enter para seleccionar la opción
+        break;  // Presionar [space] para seleccionar la opción
       } else if (tecla == 224) {
         tecla = getch();  // Leer la tecla de flecha
         if (tecla == 72) {
@@ -779,7 +975,9 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
     gotoxy(105, 28);
     printf("\033[1;33mSALIR DEL JUEGO\033[0m\n");
 
-
+    /*
+    por medio de la funcnion getch se va dando un menu interactivo en el cual se va detectando si el usuario preciona una flecha hacia arriba o abajo para seleccionar su opcion
+    */
 
     int flecha = 1;
     int tecla;
@@ -792,7 +990,7 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
       printf(" ");
 
       if (tecla == 32) {
-        break;  // Presionar Enter para seleccionar la opción
+        break;  // Presionar [space] para seleccionar la opción
       } else if (tecla == 224) {
         tecla = getch();  // Leer la tecla de flecha
         if (tecla == 72) {
