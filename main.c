@@ -673,60 +673,166 @@ void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vec
 }
 
 //Función para seleccionar la cantidad de jugadores
-void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
+void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves) {
   int opcion = 1;
-  while(opcion != 0){
-    printf("\033[0;37m");
+  system("cls");
+  while (opcion != 0) {
+    system("cls");
+    printf("\033[?25l");
+    gotoxy(80, 10);
+    colorCarta(4);printf("Ingrese una cantidad de jugadores entre 2 y 4 \n");
+    gotoxy(80, 11);
+    colorCarta(3);printf("2 jugadores\n");
+    gotoxy(80, 12);
+    colorCarta(2);printf("3 jugadores\n");    
+    gotoxy(80, 13);
+    colorCarta(1);printf("4 jugadores\n\n");
 
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
-    printf("║  Presione 0 para volver al menu inicial                     ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    
-    scanf("%d", contJugadores);
-    opcion=(*contJugadores);
-    getchar();
-  
-    if(opcion>=2 && opcion<=4){
-      theGameBegins(listaJugadores,mapa, contJugadores,vectorClaves);
-      return;
-    } 
-         
-  }
-}
+    int flecha = 1;
+    int tecla;
+    while (true) {
+      gotoxy(79, flecha + 10);
+      printf(">");
+      tecla = getch();
+      gotoxy(79, flecha + 10);
+      printf(" ");
 
-void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves){
-  //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
-  int opcion = 1;
-  while(opcion != 0){
-printf("\033[0;31m");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║                  DEFINITIVAMENTE UNON'T :D                 ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Presione 1 para iniciar partida                            ║\n");
-    printf("║  Presione 2 para cargar partida                             ║\n");
-    printf("║  Presione 0 para salir del juego                            ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    //Se cambia el valor de la variable "opcion" con un valor que desee el usuario realizar
-    scanf("%d", &opcion);
-    getchar();
-    //Se utiliza un switch para acceder a las opciones de cada función
-    switch(opcion){
-      case 1: IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
-      break; 
-      case 2:{
-        bool cargar = true;
-        theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);
-      } 
-      //en caso de ser cero se imprime lo sgte. Para finalizar el programa
-      case 0:
-        printf("         by GG WP//");
+      if (tecla == 32) {
+        break;  // Presionar Enter para seleccionar la opción
+      } else if (tecla == 224) {
+        tecla = getch();  // Leer la tecla de flecha
+        if (tecla == 72) {
+          // Flecha hacia arriba
+          if (flecha > 1) {
+            flecha--;
+          }
+        } else if (tecla == 80) {
+          // Flecha hacia abajo
+          if (flecha < 3) {
+            flecha++;
+          }
+        }
+      }
+    }
+
+    system("cls");  // Limpiar la pantalla
+
+    switch (flecha) {
+      case 1:
+        *contJugadores = 2;
         break;
+      case 2:
+        *contJugadores = 3;
+        break;
+      case 3:
+        *contJugadores = 4;
+        break;
+    }
+
+    if (*contJugadores >= 2 && *contJugadores <= 4) {
+      theGameBegins(listaJugadores, mapa, contJugadores, vectorClaves);
+      return;
+    }
+    
+    gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+    if(kbhit){
+      tecla=getch();
     }
   }
 }
 
+
+void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves) {
+  int opcion = 1;
+  while (opcion != 0) {
+    system("cls");  // Limpiar la pantalla
+    
+    gotoxy(55, 10);
+    printf(" .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.\n");
+    gotoxy(55, 11);
+    printf("| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |\n");
+    gotoxy(55, 12);
+    printf("| | _____  _____ | || | ____  _____  | || |     ____     | || | ____  _____  | || |      _       | || |  _________   | |\n");
+    gotoxy(55, 13);
+    printf("| ||_   _||_   _|| || ||_   \\|_   _| | || |   .'    `.   | || ||_   \\|_   _| | || |     | |      | || | |  _   _  |  | |\n");
+    gotoxy(55, 14);
+    printf("| |  | |    | |  | || |  |   \\ | |   | || |  /  .--.  \\  | || |  |   \\ | |   | || |     |_|      | || | |_/ | | \\_|  | |\n");
+    gotoxy(55, 15);
+    printf("| |  | '    ' |  | || |  | |\\ \\| |   | || |  | |    | |  | || |  | |\\ \\| |   | || |              | || |     | |      | |\n");
+    gotoxy(55, 16);
+    printf("| |  |  `--'  |  | || | _| |_\\   |_  | || |  \\  `--'  /  | || | _| |_\\   |_  | || |              | || |    _| |_     | |\n");
+    gotoxy(55, 17);
+    printf("| |  '\\______/   | || ||_____|\\____| | || |   `.____.'   | || ||_____|\\____| | || |              | || |   |_____|    | |\n");
+    gotoxy(55, 18);
+    printf("| |              | || |              | || |              | || |              | || |              | || |              | |\n");
+    gotoxy(55, 19);
+    printf("| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |\n");
+    gotoxy(55, 20);
+    printf(" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'\n");
+    
+    gotoxy(86, 25);
+    printf("\n");
+    gotoxy(105, 26);
+    printf("\033[1;33mINICIAR PARTIDA\033[0m\n");
+    gotoxy(105, 27);
+    printf("\033[1;33mCARGAR PARTIDA\033[0m\n");
+    gotoxy(105, 28);
+    printf("\033[1;33mSALIR DEL JUEGO\033[0m\n");
+
+
+
+    int flecha = 1;
+    int tecla;
+    while (true) {
+      printf("\033[?25l");
+      gotoxy(89, flecha + 25);
+      printf(">");
+      tecla = getch();
+      gotoxy(89, flecha + 25);
+      printf(" ");
+
+      if (tecla == 32) {
+        break;  // Presionar Enter para seleccionar la opción
+      } else if (tecla == 224) {
+        tecla = getch();  // Leer la tecla de flecha
+        if (tecla == 72) {
+          // Flecha hacia arriba
+          if (flecha > 1) {
+            flecha--;
+          }
+        } else if (tecla == 80) {
+          // Flecha hacia abajo
+          if (flecha < 3) {
+            flecha++;
+          }
+        }
+      }
+    }
+
+    system("cls");  // Limpiar la pantalla
+
+    switch (flecha) {
+      case 1:
+        IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
+        break;
+      case 2:{
+        bool cargar = true;
+        theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);      
+        break;
+      }
+      case 3:
+        printf("         by GG WP//");
+        return;  
+    }
+    
+    gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+    if(kbhit){
+      tecla=getch();
+    }
+    
+    
+  }
+}
 
 int main(void) {
   List *listaJugadores = createList();
@@ -735,6 +841,8 @@ int main(void) {
   int *vectorClaves =(int*) malloc(54*sizeof(int));
   rellenarMapaCartas(mapa,vectorClaves);
   srand(time(NULL));
+  HWND hwnd = GetConsoleWindow(); // Obtener el identificador de la ventana de la consola
+  ShowWindow(hwnd, SW_MAXIMIZE);
   
   menu(listaJugadores, mapa, &contJugadores,vectorClaves);
   free(vectorClaves);
