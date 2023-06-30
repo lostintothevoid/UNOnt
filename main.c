@@ -330,6 +330,167 @@ void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vec
   
 }
 
+bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int *direccion, int *sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, int *turnoDe){
+  char archivo[100];
+  //Se le pide al usuario que ingrese el nombre del archivo de donde desea importar las tareas
+  printf("Ingresa el nombre de la partida que quieras cargar:\n");
+  //fflush(stdin);
+  scanf("%[^\n]s",archivo);
+  getchar();
+  
+  //Se abre el archivo
+  FILE *fp=fopen(archivo, "r");
+  if(fp==NULL){
+    printf("\n===============================================================\n");
+    printf("                   Error al importar archivo...\n");
+    printf("     Asegúrese de importar al programa con el mismo nombre\n");
+    printf("===============================================================\n\n");
+    return false;
+  }
+  char linea[300];
+  //Se obtiene la primera línea (Que no nos sirve porque son las descripciones de las columnas)
+  fgets(linea,301,fp);
+
+  int j=0;
+  //A partir de aqui las lineas son importante porque tienen la información que necesitamos
+  while(fgets(linea,301,fp)!=NULL){
+    //Es una tarea por linea, por lo que aquí se crea
+    tipoJugador *player;
+    player=malloc(sizeof(tipoJugador));
+    //Se empieza a obtener cada parámetro a través de strtok, asi guardandose en sus variables correspondientes
+    linea[strlen(linea)-1] = 0;
+    
+    char *ch = strtok(linea, ",");
+    
+    if(j==0){
+      
+      *contJugadores = atoi(ch);
+
+      ch = strtok(NULL,",");
+      *direccion= atoi(ch);
+
+      ch = strtok(NULL,",");
+      *sumaDeCartas= atoi(ch);
+    
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.numero = atoi(ch);
+        
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.codigo = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.color = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.clave = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->cont = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.numero = atoi(ch);
+        
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.codigo = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.color = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.clave = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->cont = atoi(ch);
+
+      ch = strtok(NULL,",");
+      *turnoDe = atoi(ch);
+      j++;
+    }
+
+    if(j==1){
+      fgets(linea,301,fp);
+      fgets(linea,301,fp);  
+      linea[strlen(linea)-1] = 0;
+    }
+  
+    if(j<=*contJugadores){
+      tipoMapa *carta = malloc(sizeof(tipoMapa));
+      if(j<2){
+        ch = strtok(linea,",");  
+      }
+      strcpy(player->jugador,ch);        
+
+      ch = strtok(NULL,",");
+      player->id = atoi(ch);
+
+      player->cartasJugador=createList();
+    
+      ch = strtok(NULL,",");
+
+      while(ch != NULL){
+
+      tipoMapa* carta = malloc(sizeof(tipoCarta));
+      carta->cont = atoi(ch);   
+
+      ch = strtok(NULL,",");
+      carta->carta.numero = atoi(ch);   
+      
+      ch = strtok(NULL,",");
+      carta->carta.codigo =atoi(ch);   
+      
+      ch = strtok(NULL,",");
+      carta->carta.color = atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.clave = atoi(ch);
+      
+      pushBack(player->cartasJugador, carta);
+      
+      ch = strtok(NULL,",");
+      }
+      pushBack(listaJugadores, player);
+    }
+    
+    if(j==*contJugadores){
+      fgets(linea,301,fp);
+      linea[strlen(linea)-1] = 0;
+    }
+
+    if(j>*contJugadores){
+      tipoMapa *carta = malloc(sizeof(tipoMapa));
+    
+      //ch = strtok(NULL,",");
+      carta->cont = atoi(ch);   
+  
+  
+      ch = strtok(NULL,",");
+      carta->carta.numero = atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.codigo =atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.color = atoi(ch);   
+          
+      ch = strtok(NULL,",");
+      carta->carta.clave = atoi(ch);
+        
+      int *clave = malloc(sizeof(int));
+        *clave = carta->carta.clave;
+      insertMap(mapa, clave, carta);
+    }
+    j++;
+  }
+  
+  
+  printf("\n===============================================================\n");
+  printf("        La importación de tareas fue hecha con éxito\n");
+  printf("===============================================================\n\n");
+  fclose(fp);
+
+  return true;
+}
+
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar) {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
   int direccion = 0;
