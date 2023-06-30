@@ -120,6 +120,12 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   } 
 }
 
+void theGameEnd(char *nombreJugador)
+{
+  printf("GANADOR: %s\n\n", nombreJugador);
+  return;
+}
+
 tipoMapa *puntocentral(List *barajajugador){
   int contcentro = 0;
   tipoMapa *aux = firstList(barajajugador);
