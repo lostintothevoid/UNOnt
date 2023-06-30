@@ -174,7 +174,7 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   
   char uno = 0;
   int tecla=0;
-  gotoxy(84,13);colorCarta(4);printf  ("Presiona la tecla izquierda o derecha para ver tus cartas\n");
+  gotoxy(74,13);colorCarta(4);printf  ("Presiona la tecla izquierda o derecha para ver tus cartas\n");
   
   while(tecla != 75 && tecla != 77)
   {
@@ -983,10 +983,10 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
     int tecla;
     while (true) {
       printf("\033[?25l");
-      gotoxy(89, flecha + 25);
+      gotoxy(104, flecha + 25);
       printf(">");
       tecla = getch();
-      gotoxy(89, flecha + 25);
+      gotoxy(104, flecha + 25);
       printf(" ");
 
       if (tecla == 32) {
