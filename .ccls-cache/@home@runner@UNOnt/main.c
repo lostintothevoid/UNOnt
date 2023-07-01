@@ -11,19 +11,6 @@
 #include "gotoxy.h"
 #include "mostrarcartas.h"
 
-/*Estructura del tipoCarta
-- Int Numero //
-- int codigo: Cada carta tendrá un código específico asociado. En caso de que sea
-una carta de tipo numérica, será del 0 al 9, el cambio color valdrá 10, +4 valdrá 11,
-bloqueo valdrá 12, reversa 13 y +2 14.
-- Int color: Se utilizara un numero para identificar el color que le corresponde a la carta
-100 rojo, 200 azul, 300 verde, 400 amarillo y 500 especial.
-Estructura del tipoMapa
-- tipoCarta carta
-- Int Contador: Se contendrá un contador para ver cuantas cartas hay de esta misma
-en el mapa.
-*/
-
 //Estructuras
 typedef struct{
   int numero; //En caso de que la carta sea numérica, llevará su número, en de que no, será -1;
@@ -43,12 +30,56 @@ typedef struct{
   int cont; //Contador de veces que la carta está en el mapa de cartas
 }tipoMapa;
 
+
+//Funciones
+
+//Función para el mapa
 int is_equal_int(void *key1, void *key2) {
   if(*(int*)key1==*(int*)key2) return 1;
   return 0;
 }
 
-void rellenarMapaCartas(Map *mapa, int *vectorClaves){
+//Función de admin para mostrar todo el mapa con las cartas
+void mostrarMapa(Map* mapa) {
+    // Obtener el primer elemento del mapa
+    void* elemento = firstMap(mapa);
+
+    // Recorrer el mapa e imprimir cada elemento
+    while (elemento != NULL) {
+        tipoMapa* cartaMapa = (tipoMapa*)elemento;
+        tipoCarta carta = cartaMapa->carta;
+
+        // Obtener el siguiente elemento del mapa
+        elemento = nextMap(mapa);
+    }
+}
+
+//Función de admin para mostrar todas las cartas de todos los jugadores
+void mostrarListasJugadores(List* listaJugadores) {
+    List* jugadorNode = firstList(listaJugadores);
+
+    while (jugadorNode != NULL) {
+        tipoJugador* jugador = (tipoJugador*)jugadorNode;
+
+        printf("Jugador: %s\n", jugador->jugador);
+        printf("Cartas:\n");
+
+       if(firstList(jugador->cartasJugador) == NULL) printf("CARTAS NULL\n");
+        tipoMapa* cartaNode = firstList(jugador->cartasJugador);
+      
+        while (cartaNode != NULL) {
+            tipoMapa* cartaMapa = (tipoMapa*)cartaNode;
+            tipoCarta carta = cartaMapa->carta;
+            printf("Color: %d, Codigo: %d, Numero: %d\n", carta.color, carta.codigo, carta.numero);
+            cartaNode = nextList(jugador->cartasJugador);
+        }
+        jugadorNode = nextList(listaJugadores);
+        
+    }
+}
+
+//Función para crear todas las cartas del juego e insertarlas en el mapa
+void rellenarMapaCartas(Map *mapa, int *vectorClaves) {
   //Se define una carta auxiliar, el color que será 100 y se irá multiplicando y la posición del vector que 
   //se llenará que partirá en 0.
   tipoCarta cartaAux;
@@ -86,6 +117,23 @@ void rellenarMapaCartas(Map *mapa, int *vectorClaves){
       insertMap(mapa, clave, cartaMapa);
     }
   }
+
+  //Lo mismo que con las cartas anteriores pero con el +4 y cambio color, que no poseen ni número ni color.
+  for(int i=13; i<=14; i++){
+    cartaAux.numero=-1;
+    cartaAux.codigo=i;
+    cartaAux.clave = cartaAux.codigo;
+    cartaAux.color=0;
+    tipoMapa *cartaMapa = malloc(sizeof(tipoMapa));;
+    cartaMapa->carta = cartaAux;
+    cartaMapa->cont = 4;
+    vectorClaves[posicion]=cartaAux.clave;
+    posicion++;
+    
+    int *clave = malloc(sizeof(int));
+      *clave = cartaAux.clave;
+    insertMap(mapa, clave, cartaMapa);
+  }
 }
 
 /*La función saca una carta al azar del mapa de cartas (El que contiene todas las cartas) y la devuelve, a su vez, baja el contador de dicha carta en el mapa, para que indique que esa carta ya está ocupada.*/
@@ -114,17 +162,19 @@ tipoMapa *repartir(Map *mapa, int *vectorClaves) {
 }
 
 //Crear mazos iniciales 
-void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
+void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves) {
   /*a función crear baraja llama a la función repartir 7 veces 
   por cada jugador, es decir que ingresa 7 cartas a cada listaJugadores de 
   jugador*/
-  
+  gotoxy(15,6);colorCarta(4);printf("JUGADORES");
+  gotoxy(10,7);colorCarta(2);printf("============================================================");
   for(int i = 1 ; i <= *contJugadores ; i++) {
+    
     //creo la listaJugadores de cartas del jugador i 
     tipoJugador *jugador=malloc(sizeof(tipoJugador));
     jugador->id=i;
     jugador->cartasJugador = createList();
-    printf("Ingrese el nickname del jugador: ");
+    gotoxy(15,i + 7);colorCarta(4);printf("Ingrese el nickname del jugador %i: ", i);
     scanf("%[^\n]s", jugador->jugador);
     getchar();
     //se reparten las cartas al la lista de cartas del jugador
@@ -133,48 +183,64 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
     }
     //se ingresa el jugador con su baraja creada en la lista de jugadores
     pushBack(listaJugadores, jugador);
-  } 
+    
+  }
+  system("cls"); 
 }
 
-void theGameEnd(char *nombreJugador)
-{
-  printf("GANADOR: %s\n\n", nombreJugador);
+//Función para imprimir un mensaje de felicitaciones al jugador que ganó
+void theGameEnd(char *nombreJugador) {
+  system("cls");
+
+  gotoxy(88,7);colorCarta(2);printf("=======================================");
+  gotoxy(95,8);colorCarta(4);printf("GANADOR: %s\n\n", nombreJugador);
+  gotoxy(88,9);colorCarta(2);printf("=======================================");
   return;
 }
 
-tipoMapa *puntocentral(List *barajajugador){
+//Función para obtener la carta central
+tipoMapa *puntocentral(List *barajajugador) {
+  //Se inicializa un contador que nos ayudará a saber el total de cartas para luego sacar la mitad
   int contcentro = 0;
+  //Tomamos la primera carta de la baraja
   tipoMapa *aux = firstList(barajajugador);
 
+  //Recorremos toda la baraja y vamos sumando al contador del total
   while(aux!=NULL){
     aux = nextList(barajajugador);
     contcentro++;
   }
-  
+
+  //Obtenemos la mitad del contador
   int centro = trunc(contcentro/2);
-  
+
+  //inicializamos la variable auxiliar con la primera carta
   aux = firstList(barajajugador);
+  //Recorremos nuevamente toda la baraja pero solo hasta llegar al centro
   while(centro!=0){
     aux=nextList(barajajugador);
     centro--;
   }
+  //Devolvemos la carta que está en el centro
   return aux;
 }
 
+//Función que muestra la baraja del jugador y le perimte desplazarse a través de ella retornando la que escoja
 tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color) {
 
+  //Se inicializan las variables que indican las carta carta central, la anterior y la siguiente
   tipoMapa *centro = puntocentral(barajajugador);
   tipoMapa *next = nextList(barajajugador);
   centro = puntocentral(barajajugador);
   tipoMapa *prev = prevList(barajajugador); 
   tipoMapa *aux;
 
-  //Se deja la baraja centrada
+  //se reestablece la central para asegurarse que esta bien centrada
   centro = puntocentral(barajajugador);
   
   char uno = 0;
   int tecla=0;
-  gotoxy(74,13);colorCarta(4);printf  ("Presiona la tecla izquierda o derecha para ver tus cartas\n");
+  gotoxy(74,13);colorCarta(4);printf  ("Presione la tecla izquierda o derecha para ver tus cartas\n");
   
   while(tecla != 75 && tecla != 77)
   {
@@ -183,10 +249,8 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
     gotoxy(74,13);colorCarta(0);printf("                                                         \n");
   }
 
-
-
+  //Se comienza el ciclo para mostrar la baraja que se rompe una vez el usuario selecciona una carta válida
   while(true){
-    //El pato ve los prints
     printf("\033[?25l");
     gotoxy(92,19);mostrarMargen(0);printf("\n");
     gotoxy(92,20);primeraLinea(CartaArriba.clave);printf("\n");
@@ -313,10 +377,9 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
         }
         
         case 32:{
-          //Verificar si la carta es apta para ser tirada, en caso de no coincidir se devolvería a la seleccion de cartas
           //Comprobar si puede tirar la carta
         
-          //Comprobar si tiro un mas algo teniendo una suma pendiente
+          //comprobar si tiro un mas algo teniendo una suma pendiente
           if(sumaDeCartas > 0 ){
             if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
               if(centro->carta.codigo == 13){
@@ -386,7 +449,6 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
             return centro;
           }
 
-          //Comprobar si es un +4 o un cambio color
           if(sumaDeCartas==0 && (centro->carta.codigo==14 || centro->carta.codigo==13)){
             gotoxy(2,51);printf("¿A que color quieres cambiar?\n");
             gotoxy(2,52);colorCarta(1);printf("1. Rojo\n");
@@ -439,8 +501,6 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
             gotoxy(1,55);printf("                 \n");
             return centro;
           }
-
-          //Si la carta no es apta, se muestra por pantalla que tire otra carta
           colorCarta(4);
           gotoxy(52,11);
           printf("  _______   _                            _                                            _           \n");
@@ -458,12 +518,9 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
           break;
         }
 
-        //Significa que sacó cartas o que le tiraron un +2 o +4 y no tenía nada para devolver
         case 122:{
           return NULL;
         }
-
-        //Significa que quiere guardar su partida, por lo que se retorna una carta con una clave especial que se revisará en la función theGame
         case 120:{
           tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
           cartaBool->carta.clave=999;
@@ -471,28 +528,36 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
         }
       }
     }
-    //A estas alturas ya tenemos la carta que jugó el jugador
+    //A estas alturas ya tenemos la carta que jugó el jugador y la devolvimos
   }
-  
 }
 
-void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int direccion, int sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, tipoJugador *jugadorAct){
+//Función que guarda una partida
+void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int direccion, int sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, tipoJugador *jugadorAct) {
   //Se crea una string estática para dar un nombre al archivo qsue exportará a los jugadores
-  
+  system("cls");
   char archivo[100];
-  printf("Escribe el nombre con el que guardarás tu partida:\n");
-  getchar();
-  //scanf("%s",archivo);
-  scanf("%[^\n]s",archivo);
+  gotoxy(80,25);
+  colorCarta(2);
+  printf("===================================================");
+  gotoxy(80, 26);
+  colorCarta(4);
+  printf("Escribe el nombre con el que guardaras tu partida:\n");
+  gotoxy(80,28);
+  colorCarta(2);
+  printf("===================================================");
+  colorCarta(0);
+  gotoxy(80, 27);scanf("%[^\n]s",archivo);
   getchar();
   FILE *fp = fopen(archivo, "w");
 
-
+  //En la primera linea, para ordenarnos indicaremos las variables que guardaremos
   fprintf(fp, "Datos de partida: contJugadores, Direccion, sumDeCartas, CartaArribaMapa.numero, CartaArribaMapa.codigo, CartaArribaMapa.color, CartaArribaMapa.clave, CartaArribaMapa.cont, CartaAbajo.numero, CartaAbajo.codigo, CartaAbajo.color, CartaAbajo.clave, CartaAbajo.cont, jugadorAct.id\n");
 
+  //En la segunda linea son todos los parámetros indicados en la primera
   fprintf(fp, "%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n", *contJugadores, direccion, sumaDeCartas, CartaArribaMapa->carta.numero, CartaArribaMapa->carta.codigo, CartaArribaMapa->carta.color, CartaArribaMapa->carta.clave, CartaArribaMapa->cont, CartaAbajo->carta.numero, CartaAbajo->carta.codigo, CartaAbajo->carta.color, CartaAbajo->carta.clave, CartaAbajo->cont, jugadorAct->id);
   
-  
+  //En la tercera linea será para indicar que harán las siguientes lineas, las cuales serán los jugadores
   fprintf(fp, "NombreJugador,ID jugador,Carta 1,numero, codigo, color, clave,Carta 2,Carta 3,Carta 4,Carta 5,Carta 6,Carta 7,Carta ...\n");
   //Se comienza a recorrer la lista jugaadores para imprimir los datos al archivo que se exportará todo
   for (tipoJugador *player = firstList(listaJugadores) ; player != NULL ; player = nextList(listaJugadores)){
@@ -505,10 +570,14 @@ void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vec
     }
     fprintf(fp, "\n");
   }
+
+  //La siguiente linea ya cuando se terminó de registrar a los jugadores, es para indicar las siguientes lineas
+  //las cuales se tratan de las cartas guardadas en el mapa
   fprintf(fp, "Map: contador,numero, codigo, color, clave\n");
   
   void* elemento = firstMap(mapa);
 
+  //Se guardan todas las cartas del mapa en el archivo linea por linea
   while (elemento != NULL) {
       tipoMapa* cartaMapa = (tipoMapa*)elemento;
       
@@ -518,32 +587,50 @@ void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vec
       elemento = nextMap(mapa);
   }
   
-  
+  system("cls");
   //De no haber errores, se muestra el siguiente mensaje por pantalla 
-  printf("===============================================================\n");
-  printf("                  Partida guardada con éxito\n");
-  printf("===============================================================\n");
+  gotoxy(90,25);printf("==========================\n");
+  gotoxy(90,26);printf("Partida guardada con exito\n");
+  gotoxy(90,28);printf("==========================\n");
   fclose(fp);
   
 }
 
-bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int *direccion, int *sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, int *turnoDe){
+bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int *direccion, int *sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, int *turnoDe) {
   char archivo[100];
   //Se le pide al usuario que ingrese el nombre del archivo de donde desea importar las tareas
+  gotoxy(67,20);
   printf("Ingresa el nombre de la partida que quieras cargar:\n");
   //fflush(stdin);
+  gotoxy(67,21);
   scanf("%[^\n]s",archivo);
   getchar();
-  
+  system("cls");
+
   //Se abre el archivo
   FILE *fp=fopen(archivo, "r");
-  if(fp==NULL){
-    printf("\n===============================================================\n");
-    printf("                   Error al importar archivo...\n");
-    printf("     Asegúrese de importar al programa con el mismo nombre\n");
-    printf("===============================================================\n\n");
-    return false;
+  while(fp==NULL){
+    gotoxy(67,21);printf("===============================================================\n");
+    gotoxy(75,22);printf("                   Error al cargar Partida...\n");
+    gotoxy(70,23);printf("        Asegurese de cargar al juego con el mismo nombre\n");
+    gotoxy(67,24);printf("===============================================================\n\n");
+
+    gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+    int tecla = 0;
+    if(kbhit){
+      tecla=getch();
+    }
+    system("cls");
+
+    gotoxy(67,20);
+    printf("Ingresa el nombre de la partida que quieras cargar:\n");
+    gotoxy(67,21);
+    scanf("%[^\n]s",archivo);
+    getchar();
+    fp=fopen(archivo, "r");
+    system("cls");
   }
+
   char linea[300];
   //Se obtiene la primera línea (Que no nos sirve porque son las descripciones de las columnas)
   fgets(linea,301,fp);
@@ -551,14 +638,15 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   int j=0;
   //A partir de aqui las lineas son importante porque tienen la información que necesitamos
   while(fgets(linea,301,fp)!=NULL){
-    //Es una tarea por linea, por lo que aquí se crea
+    
     tipoJugador *player;
     player=malloc(sizeof(tipoJugador));
     //Se empieza a obtener cada parámetro a través de strtok, asi guardandose en sus variables correspondientes
     linea[strlen(linea)-1] = 0;
     
     char *ch = strtok(linea, ",");
-    
+
+    //Aqui se obtiene todo lo relacionado con la partida, es decir, el turno, la carta que está arriba, dirección, etc.
     if(j==0){
       
       *contJugadores = atoi(ch);
@@ -609,7 +697,9 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       fgets(linea,301,fp);  
       linea[strlen(linea)-1] = 0;
     }
-  
+
+    
+    //Se obtienen los datos de los jugadores con todas sus cartas.
     if(j<=*contJugadores){
       tipoMapa *carta = malloc(sizeof(tipoMapa));
       if(j<2){
@@ -653,6 +743,7 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       linea[strlen(linea)-1] = 0;
     }
 
+    //Se guardan las cartas en el mapa de cartas
     if(j>*contJugadores){
       tipoMapa *carta = malloc(sizeof(tipoMapa));
     
@@ -678,12 +769,26 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
     }
     j++;
   }
+
+    gotoxy(30,1);printf("                                                                \n");
+    gotoxy(30,2);printf("                                                               \n");
+    gotoxy(30,3);printf("                                                                 \n\n");
+    gotoxy(30,4);printf("                                                               \n");
+    gotoxy(30,5);printf("                                                                \n");
+    gotoxy(30,6);printf("                                                               \n");
+    gotoxy(30,7);printf("                                                                \n");
+    gotoxy(30,8);printf("                                                                \n\n");
   
   
-  printf("\n===============================================================\n");
-  printf("        La importación de tareas fue hecha con éxito\n");
-  printf("===============================================================\n\n");
+  gotoxy(70,1);printf("===============================================================\n");
+  gotoxy(80,2);printf("        La partida fue cargada con exito\n");
+  gotoxy(70,3);printf("===============================================================\n\n");
   fclose(fp);
+  gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+  int tecla = 0;
+  if(kbhit){
+    tecla=getch();
+  }
 
   return true;
 }
@@ -691,62 +796,52 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar) {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
   int direccion = 0;
-  //La sumaDeCartas es el control de las cartas que hay que ir sacando durante la partida
   int sumaDeCartas = 0;
-  //El color será 100 rojo, 200 azul, 300 verde y 400 amarillo
   int color = 0;
-  //turnoDe es el id del jugador al que le toca
   int turnoDe = 0;
   tipoMapa *CartaArribaMapa = malloc(sizeof(tipoMapa));
   
-  //Se limpia la pantalla
-  system("cls");
-  
-  //Si no se cargaron datos se llama a la funcion repartir para inicializar la "carta sobre la mesa"
   if(cargar==false){
     CartaArribaMapa = repartir(mapa, vectorClaves);
-    //Si la carta es un +4 o un cambio de color se vuelve a repartir hasta que salga una carta de color
     while(CartaArribaMapa->carta.codigo==13 || CartaArribaMapa->carta.codigo==14){
       CartaArribaMapa = repartir(mapa, vectorClaves);
     }
   }
   tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
-
-  //Obtenemos el primer jugador
+   
   tipoJugador *jugadorAct = firstList(listaJugadores);
    
-  //Se comprueba si se estan cargando datos, en caso de que la carga de datos resulte fallida se retorna
+  
+  
   if(cargar==true){
    if(cargarDatos(listaJugadores, mapa, contJugadores, vectorClaves, &direccion, &sumaDeCartas, CartaArribaMapa, CartaAbajo, &turnoDe) == false) return;
-    //Se vincula turnoDe con el jugador actual
+    //hay que vincular turnoDe con el jugador actual
     for(jugadorAct=firstList(listaJugadores); jugadorAct!=NULL ; jugadorAct=nextList(listaJugadores)){
       if(turnoDe==jugadorAct->id) break;
     }
   }
-
-  //El color será igual al de la carta arriba si no es un +4 o un cambio color, ya que no nos interesa que tenga ese color
+  //mostrarListasJugadores(listaJugadores);
   if(CartaArribaMapa->carta.codigo!=13 && CartaArribaMapa->carta.codigo){
     color=CartaArribaMapa->carta.color;  
   }
-
-    //Se comienza el ciclo del juego
-  while(true){//(true), en efecto (true)
+  
+  while(true){//(true)
     system("cls");
     printf("\033[?25l");
     //mostrarListasJugadores(listaJugadores);
     gotoxy(84,8);colorCarta(2);printf("==============================\n");
     gotoxy(84,9);colorCarta(4);printf("       TURNO DE: %s \n", jugadorAct->jugador);
     gotoxy(84,10);colorCarta(2);printf("==============================\n"); 
-    //Se obtiene la carta que desea jugar el jugador actual al llamar a la función turnojugador
-    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color);
-    //En caso de que el jugador no tenga una carta para jugar o salte su turno, se retornará NULL.
+    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color); //aspecto: se muestran las cartas del jugador y la cartaArriba
 
-    //Si la carta es nula y la suma de cartas es 0 entonces el jugador roba solo una carta
+    //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
+    //salte su turno, se retornará NULL.
+    //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
+    
     if(cartaJugada == NULL && sumaDeCartas == 0){
       pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
     }
 
-    //Si la carta es nula y la suma de cartas es mayor a 0 el jugador deberá robar la cantidad de cartas indicada por la suma de cartas
     if(cartaJugada == NULL && sumaDeCartas > 0){
         while(sumaDeCartas != 0){
           pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
@@ -754,52 +849,37 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
         }
     }
 
-    //Si el jugador si tiró una carta, entra al siguiente if para confirmar el efecto de su carta
     if(cartaJugada != NULL){
 
-      //En este caso quiere decir que quiere guardar la partida, entonces llama a la función exportarDatos
       if(cartaJugada->carta.clave == 999){
         exportarDatos(listaJugadores, mapa, contJugadores, vectorClaves, direccion, sumaDeCartas, CartaArribaMapa, CartaAbajo,  jugadorAct);
         return;
       }
-
-      //En este caso quiere decir que tiró un +2, por lo que la sumaDeCartas se le tiene que sumar 2.
+      
       if(cartaJugada->carta.codigo==12){
         sumaDeCartas=sumaDeCartas+2;
       }
-      //En este caso quiere decir que tiró un +4, por lo que la sumaDeCartas se le tiene que sumar 4.
       if(cartaJugada->carta.codigo==13){
         sumaDeCartas=sumaDeCartas+4;
       }
-
-      //En este caso en el que la carta no sea ni un cambio color o un +4, el color se actualizará.
-      //En el caso contrario el color se actualiza en la función turnoJugador().
       if(cartaJugada->carta.codigo!=13 && cartaJugada->carta.codigo!=14){
         color=cartaJugada->carta.color;  
       }
-
-      //Ahora la cartaAbajo será la actual cartaArriba y la cartaArriba ahora será la carta que se jugó
-      //Entonces el siguiente jugador tendrá que jugar con las condiciones de la cartaJugada, que ahora es cartaArriba
+      
       CartaAbajo = CartaArribaMapa;
       CartaArribaMapa = cartaJugada;
 
-      //Procedemos a buscar la cartaJugada para luego eliminarla de la baraja del jugador
       tipoMapa* cartaNode = firstList(jugadorAct->cartasJugador);
       while (cartaNode != cartaJugada) {
           cartaNode = nextList(jugadorAct->cartasJugador);
       }
       popCurrent(jugadorAct->cartasJugador);
 
-      /*Tras eliminar la carta de la baraja del jugador se comprueba si se qeudó sin cartas, en caso de 
-      que no posea mas se llamará a la función theGameEnd para terminar el juego*/
       if(firstList(jugadorAct->cartasJugador) == NULL) {
         theGameEnd(jugadorAct->jugador);
       return;
       }
-
-      //Si la carta es un cambio de dirección, cambiará de valor 0 a 1 o viceversa.
-      //Además implementamos para que cuando se juege de a 2, cuando un jugador tire un cambio de dirección,
-      //le tocará nuevamente su turno
+      
       if(cartaJugada->carta.codigo==11){
         if(direccion==0) direccion=1;
         else{
@@ -820,22 +900,16 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
           }
         }
       }
-
-      //Si la carta es un bloqueo se avanzará al siguiente
+      
       if(cartaJugada->carta.codigo==10){
-        //si la dirección es hacia la derecha se avanza un jugador en la lista
         if(direccion==0){
           jugadorAct = nextList(listaJugadores);
-          //Si se llegó al final de la lista de jugadores se devolverá al inicio
           if(jugadorAct == NULL){
             jugadorAct = firstList(listaJugadores);
           }
         }
         else{
-          //Si la dirección es hacia la izquierda se retrocede un jugador 
           jugadorAct = prevList(listaJugadores);
-          /*Si estamos en el primer jugador y por lo tanto el anterior es nulo 
-          entonces se va al último de la lista*/
           if(jugadorAct == NULL){
             jugadorAct = lastList(listaJugadores);
           }
@@ -843,8 +917,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       }      
       CartaAbajo->cont++;
     }
-
-    //Ahora dependiendo de la dirección, se asignará al siguiente jugador
+    
     if(direccion==0){
       jugadorAct = nextList(listaJugadores);
       if(jugadorAct == NULL){
@@ -860,7 +933,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   }
 }
 
-void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
+void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves) {
   //mostrarMapa(mapa);
   crearBaraja(listaJugadores,mapa, contJugadores, vectorClaves);
   theGame(listaJugadores,mapa, contJugadores, vectorClaves,false);
@@ -868,7 +941,21 @@ void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vec
   return;
 }
 
-//Función para seleccionar la cantidad de jugadores
+/*Estructura del tipoCarta
+- Int Numero //
+- int codigo: Cada carta tendrá un código específico asociado. En caso de que sea
+una carta de tipo numérica, será del 0 al 9, el cambio color valdrá 10, +4 valdrá 11,
+bloqueo valdrá 12, reversa 13 y +2 14.
+- Int color: Se utilizara un numero para identificar el color que le corresponde a la carta
+100 rojo, 200 azul, 300 verde, 400 amarillo y 500 especial.
+Estructura del tipoMapa
+- tipoCarta carta
+- Int Contador: Se contendrá un contador para ver cuantas cartas hay de esta misma
+en el mapa.
+Funciones:
+- Repartir cartas: Esta opci
+*/
+
 void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves) {
   int opcion = 1;
   system("cls");
@@ -894,7 +981,7 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
       printf(" ");
 
       if (tecla == 32) {
-        break;  // Presionar [space] para seleccionar la opción
+        break;  // Presionar Enter para seleccionar la opción
       } else if (tecla == 224) {
         tecla = getch();  // Leer la tecla de flecha
         if (tecla == 72) {
@@ -937,7 +1024,6 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
   }
 }
 
-
 void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves) {
   int opcion = 1;
   while (opcion != 0) {
@@ -975,9 +1061,7 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
     gotoxy(105, 28);
     printf("\033[1;33mSALIR DEL JUEGO\033[0m\n");
 
-    /*
-    por medio de la funcnion getch se va dando un menu interactivo en el cual se va detectando si el usuario preciona una flecha hacia arriba o abajo para seleccionar su opcion
-    */
+
 
     int flecha = 1;
     int tecla;
@@ -990,7 +1074,7 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
       printf(" ");
 
       if (tecla == 32) {
-        break;  // Presionar [space] para seleccionar la opción
+        break;  // Presionar Enter para seleccionar la opción
       } else if (tecla == 224) {
         tecla = getch();  // Leer la tecla de flecha
         if (tecla == 72) {
@@ -1012,11 +1096,18 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
     switch (flecha) {
       case 1:
         IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
-        break;
+        gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+        if(kbhit){
+        tecla=getch();
+        }
+        return;
       case 2:{
         bool cargar = true;
         theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);      
-        break;
+        gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+        if(kbhit){
+        tecla=getch();
+    }
       }
       case 3:
         printf("         by GG WP//");
