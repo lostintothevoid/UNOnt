@@ -750,7 +750,6 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       //ch = strtok(NULL,",");
       carta->cont = atoi(ch);   
   
-  
       ch = strtok(NULL,",");
       carta->carta.numero = atoi(ch);   
         
@@ -778,7 +777,6 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
     gotoxy(30,6);printf("                                                               \n");
     gotoxy(30,7);printf("                                                                \n");
     gotoxy(30,8);printf("                                                                \n\n");
-  
   
   gotoxy(70,1);printf("===============================================================\n");
   gotoxy(80,2);printf("        La partida fue cargada con exito\n");
@@ -810,8 +808,6 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
    
   tipoJugador *jugadorAct = firstList(listaJugadores);
-   
-  
   
   if(cargar==true){
    if(cargarDatos(listaJugadores, mapa, contJugadores, vectorClaves, &direccion, &sumaDeCartas, CartaArribaMapa, CartaAbajo, &turnoDe) == false) return;
@@ -836,7 +832,6 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
 
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
-    //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
     
     if(cartaJugada == NULL && sumaDeCartas == 0){
       pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
@@ -940,21 +935,6 @@ void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vec
   
   return;
 }
-
-/*Estructura del tipoCarta
-- Int Numero //
-- int codigo: Cada carta tendrá un código específico asociado. En caso de que sea
-una carta de tipo numérica, será del 0 al 9, el cambio color valdrá 10, +4 valdrá 11,
-bloqueo valdrá 12, reversa 13 y +2 14.
-- Int color: Se utilizara un numero para identificar el color que le corresponde a la carta
-100 rojo, 200 azul, 300 verde, 400 amarillo y 500 especial.
-Estructura del tipoMapa
-- tipoCarta carta
-- Int Contador: Se contendrá un contador para ver cuantas cartas hay de esta misma
-en el mapa.
-Funciones:
-- Repartir cartas: Esta opci
-*/
 
 void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves) {
   int opcion = 1;
@@ -1104,7 +1084,7 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
       case 2:{
         bool cargar = true;
         theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);      
-        gotoxy(90,27);printf("\nPresione una tecla para continuar...");
+        |gotoxy(90,27);printf("\nPresione una tecla para continuar...");
         if(kbhit){
         tecla=getch();
     }

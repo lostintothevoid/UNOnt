@@ -176,7 +176,7 @@ void terceraLinea(int num){
         printf("%c",186);colorCarta(b);printf("  %c%c%c   %c%c%c  ",219,219,219,219,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 10:
-        printf("%c",186);colorCarta(b);printf("  %c%c  %c%c%c%c%c  ",219,219,220,219,223,219,219);colorCarta(0);printf("%c ",186);
+        printf("%c",186);colorCarta(b);printf(" %c%c%c  %c%c%c%c%c%c ",220,219,219,220,219,223,219,219,220);colorCarta(0);printf("%c ",186);
         break;
     case 11:
         printf("%c",186);colorCarta(b);printf("%c%c%c    %c%c%c%c%c%c",219,219,223,219,223,223,219,219,220);colorCarta(0);printf("%c ",186);
@@ -229,7 +229,7 @@ void cuartaLinea(int num){
         printf("%c",186);colorCarta(b);printf("  %c%c%c%c%c%c%c%c%c  ",219,219,219,220,220,220,219,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 10:
-        printf("%c",186);colorCarta(b);printf("  %c%c  %c%c %c%c  ",219,219,219,223,219,219);colorCarta(0);printf("%c ",186);
+        printf("%c",186);colorCarta(b);printf(" %c%c   %c%c  %c%c ",219,219,219,223,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 11:
         printf("%c",186);colorCarta(b);printf("%c%c        %c%c%c",219,219,223,219,219);colorCarta(0);printf("%c ",186);
@@ -282,7 +282,7 @@ void quintaLinea(int num){
         printf("%c",186);colorCarta(b);printf("  %c%c%c%c%c%c%c%c%c  ",223,219,219,219,219,219,219,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 10:
-        printf("%c",186);colorCarta(b);printf("  %c%c %c%c  %c%c  ",219,219,220,219,219,219);colorCarta(0);printf("%c ",186);
+        printf("%c",186);colorCarta(b);printf(" %c%c  %c%c   %c%c ",219,219,220,219,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 11:
         printf("%c",186);colorCarta(b);printf("%c%c%c        %c%c",219,219,219,219,219);colorCarta(0);printf("%c ",186);
@@ -335,7 +335,7 @@ void sextaLinea(int num){
         printf("%c",186);colorCarta(b);printf("       %c%c%c%c  ",219,219,219,219);colorCarta(0);printf("%c ",186);
         break;
     case 10:
-        printf("%c",186);colorCarta(b);printf("  %c%c%c%c%c  %c%c  ",219,219,220,219,223,219,219);colorCarta(0);printf("%c ",186);
+        printf("%c",186);colorCarta(b);printf(" %c%c%c%c%c%c  %c%c%c ",223,219,219,220,219,223,219,219,223);colorCarta(0);printf("%c ",186);
         break;
     case 11:
         printf("%c",186);colorCarta(b);printf(" %c%c%c%c%c    %c%c%c",223,219,219,220,219,220,219,219);colorCarta(0);printf("%c ",186);

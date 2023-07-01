@@ -11,7 +11,7 @@ INSTRUCCIONES DEL JUEGO
 -Debes respetar el turno de cada jugador pasando el control al siguiente jugador una vez termines tu turno
 
 INSTRUCCIONES DE LA APLICACIÓN
-
+-Para iniciar la aplicación se deberá abri el archivo UNONTGAME.exe
 -Utilice las flachas de arriba y abajo en el teclado para moverse a través del menú
 -Para seleccionar una opción en el menú deberá presionar la tecla "espacio"
 -En el momento que se ingrese los nombres de los jugadores deberá escribir un nombre y luego presionar la tecla "enter" para proceder a ingresar el siguiente

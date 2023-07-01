@@ -110,7 +110,7 @@ void insertMap(Map * list, void * key, void * value){
             return;
         }
         aux = aux->next;
-    }|
+    }
 
     if(list->lower_than==NULL) {
         _pushFront (list, key, value);
